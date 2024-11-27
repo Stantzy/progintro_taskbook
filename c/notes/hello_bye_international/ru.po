@@ -1,0 +1,27 @@
+# SOME DESCRIPTIVE TITLE.
+# Russian translation for the hello_bye program
+# No copyright is claimed 
+# Igor S. Bazhev, 2024. 
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: hello_bye\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-07-04 13:32+0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Igor S. Bazhev\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: hello_bye.c:18
+#, c-format
+msgid "Hello, world!\n"
+msgstr "Здравствуй, мир!\n"
+
+#: hello_bye.c:20
+#, c-format
+msgid "Goodbye, world!\n"
+msgstr "До свидания, мир!\n"

@@ -1,0 +1,36 @@
+4.28	a) int (*p)[12];
+	b) double (*p)[10][2];
+	c) char (*p)[5];
+	d) char *(*p)[5];
+	e) struct item *(*p)[3];
+	f) struct item **p;
+
+4.29	a) void (*f_ptr)();
+	b) int (*f_ptr)(int);
+	c) void *(*f_ptr)(int);
+	d) double (*f_ptr)(int, const char*);
+	e) void (*f_ptr)(double (*)[3]);
+	f) double *(*f_ptr)(int, double (*)[3])[3];
+
+4.30	int f1(const char *s1, const char *s2);
+	void f2(char **strptr, int len, int (*f1_ptr)(const char*, const char*));
+
+4.31	a) typedef int *intptr;
+	   typedef intptr (*int10ptr)[10];
+	   int10ptr f(int);
+
+	b) typedef void (*ivfptr)(int, void*);
+	   typedef void (*f3ptr)(int, ivfptr, void*);
+	   f3ptr fpvec[15];
+
+	c) typedef double (*d2d_fptr)(double);
+	   d2d_fptr (*repfptr)(d2d_fptr);
+
+	d) typedef void (*)(double*) fdpv_ptr;
+	   typedef int (*f2i_fptr)(fdpv_ptr);
+	   f2i_fptr (*fvecpos)[4];
+
+4.32	double (*(*set_sr_func(
+		int num,
+		double(*(*func)(double(*)[3], int, double))[3]
+	))(double(*)[3], int, double))[3];
