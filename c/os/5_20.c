@@ -1,18 +1,23 @@
 #include <signal.h>
 #include <unistd.h>
-#include <stdlib.h>
+#include <stdio.h>
 
-const char message[] = "Good bye!\n";
+volatile int sig_caught = 0;
 
-void handler()
+void handler(int s)
 {
-	write(1, message, sizeof(message) - 1);
-	exit(1);
+	sig_caught = 1;
 }
 
 int main()
 {
 	signal(SIGINT, handler);
-	pause();
+	printf("Press Ctrl-C to quit\n");
+
+	while(!sig_caught)
+		pause();
+
+	printf("Good bye\n");
+
 	return 0;
 }
