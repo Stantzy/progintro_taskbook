@@ -63,7 +63,7 @@ int main(int argc, char **argv)
 	close(fd[1]);
 
 	wr = wait(&status);
-    if(wr == -1) {
+	if(wr == -1) {
 		fprintf(stderr, "Failure to start the given program\n");
 		return 3;
 	} else if(WIFEXITED(status)) {
