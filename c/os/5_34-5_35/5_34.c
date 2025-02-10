@@ -34,9 +34,11 @@ int prefix_is_empty(char *prefix_start, char *prefix_end)
 	return flag;
 }
 
-char *get_prefix_start(char *prefix_cur)
+char *get_prefix_start(char *prefix_cur, char *buf_start)
 {
 	while(!is_separator(*prefix_cur)) {
+		if(prefix_cur == buf_start)
+			return buf_start;
 		prefix_cur--;
 	}
 	prefix_cur++;
@@ -165,7 +167,7 @@ int process_autocomplete(char **p_obuf_cur, char *buf_start, FILE *dict)
 	long match_positions[match_bufsize];
 	char *prefix_start;
 
-	prefix_start = get_prefix_start(*p_obuf_cur);
+	prefix_start = get_prefix_start(*p_obuf_cur, buf_start);
 
 	matches = search_for_matches(buf_start, prefix_start, *p_obuf_cur,
 								dict, match_positions);
