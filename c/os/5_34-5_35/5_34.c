@@ -226,14 +226,8 @@ ret:
 	return 0;
 }
 
-void set_noncannonical_mode(struct termios *ts1, struct termios *ts2)
+void set_noncannonical_mode(struct termios *ts1)
 {
-	if(tcgetattr(0, ts1) != 0) {
-		perror("tcgetattr");
-		exit(1);
-	}
-	memcpy(ts2, ts1, sizeof(*ts1));
-
 	ts1->c_lflag &= ~(ICANON | ECHO);
 	ts1->c_lflag &= ISIG;
 	ts1->c_cc[VMIN] = 1;
@@ -274,12 +268,18 @@ int main(int argc, char **argv)
 		return 4;
 	}
 
-	set_noncannonical_mode(&ts1, &ts2);
+	if(tcgetattr(0, &ts1) != 0) {
+		perror("tcgetattr");
+		exit(1);
+	}
+	memcpy(&ts2, &ts1, sizeof(ts1));
+	set_noncannonical_mode(&ts1);
 	parse_input(out_fd, dict_fd);
 	if(tcsetattr(0, TCSANOW, &ts2) != 0) {	/* restore settings */
 		perror("tcsetattr");
 		return 5;
 	}
+	
 	fclose(out_fd);
 	fclose(dict_fd);
 
