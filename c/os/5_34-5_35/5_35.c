@@ -125,8 +125,14 @@ void process_backspace(char **pp_buf, char *buf_start)
 	}
 }
 
-void complete_word(char *buf_start, char *prefix_start, char *prefix_end,
-			char **pp_obuf_cur, FILE *dict, long offset)
+void complete_word(
+	char *buf_start,
+	char *prefix_start,
+	char *prefix_end,
+	char **pp_obuf_cur,
+	FILE *dict,
+	long offset
+)
 {
 	int len;
 	char *tmp, *p_tail;
@@ -170,8 +176,11 @@ void print_match(char *match)
 	putc(' ', stdout);
 }
 
-void output_multiple_matches(FILE *dict,
-			long match_positions[match_bufsize], int count)
+void output_multiple_matches(
+	FILE *dict,
+	long match_positions[match_bufsize],
+	int count
+)
 {
 	int i;
 	char word[out_bufsize];
@@ -192,8 +201,13 @@ void output_multiple_matches(FILE *dict,
 	printf("\n");
 }
 
-int search_for_matches(char *buf_start, char *prefix_start, char *prefix_end,
-									FILE *dict, long match_pos[match_bufsize])
+int search_for_matches(
+	char *buf_start,
+	char *prefix_start,
+	char *prefix_end,
+	FILE *dict,
+	long match_pos[match_bufsize]
+)
 {
 	int count_matches = 0, match_flag = 1, new_line = 1;
 	char c;
@@ -255,12 +269,12 @@ int process_autocomplete(char **pp_obuf_cur, char *buf_start, FILE *dict)
 	else if(*pp_obuf_cur == buf_start)
 		prefix_end = prefix_start;
 
-	matches = search_for_matches(buf_start, prefix_start, prefix_end,
-								dict, match_positions);
+	matches = search_for_matches(buf_start, prefix_start,
+				prefix_end, dict, match_positions);
 	
 	if(matches == 1) {
 		complete_word(buf_start, prefix_start, prefix_end,
-					pp_obuf_cur, dict, match_positions[0]);
+				pp_obuf_cur, dict, match_positions[0]);
 	} else if(matches != 0) {
 		output_multiple_matches(dict, match_positions, matches);
 		buf_len = printf("%s", buf_start);
@@ -271,8 +285,11 @@ int process_autocomplete(char **pp_obuf_cur, char *buf_start, FILE *dict)
 	return 0;
 }
 
-int handle_pressed_arrow(char arrow, char *out_buf_start,
-										char **pp_obuf_cur)
+int handle_pressed_arrow(
+	char arrow,
+	char *out_buf_start,
+	char **pp_obuf_cur
+)
 {
 	if(arrow == left_arrow && *pp_obuf_cur == out_buf_start)
 		return 1;
@@ -290,34 +307,41 @@ int handle_pressed_arrow(char arrow, char *out_buf_start,
 	return 0;
 }
 
-int process_escape_seq(char *read_buf, int *read_res,
-				char *out_buf_start, char **pp_obuf_cur, int *flag)
+int process_escape_seq(
+	char *read_buf,
+	int *read_res,
+	char *out_buf_start,
+	char **pp_obuf_cur,
+	int *flag
+)
 {
-    enum { esc_type_pos = 2, seq_max_len = 7 };
+	enum { esc_type_pos = 2, seq_max_len = 7 };
 	char escape_seq[seq_max_len];
-    int i;
-    
-	fill_null(escape_seq, seq_max_len);
+	int i;
 
-    for(i = 0; i < *read_res; i++) {
+	fill_null(escape_seq, seq_max_len);
+	
+	for(i = 0; i < *read_res; i++) {
 		if(i > 0 && read_buf[i] == escape)
 			break;
-        escape_seq[i] = read_buf[i];
-    }
+	escape_seq[i] = read_buf[i];
+	}
 	
 	switch(escape_seq[esc_type_pos]) {
 		case left_arrow:
 		case right_arrow:
-			if(handle_pressed_arrow(escape_seq[esc_type_pos], 
-								out_buf_start, pp_obuf_cur)) {
+			if(handle_pressed_arrow(
+				escape_seq[esc_type_pos],out_buf_start,
+				pp_obuf_cur)
+			) {
 				*flag = 1;
 			}
 			break;
 		default:
 			break;
 	}
-
-    *read_res -= strlen(escape_seq);	/* ? */
+	
+	*read_res -= strlen(escape_seq);
 	
 	return 0;
 }
@@ -409,45 +433,66 @@ int parse_input(FILE *out, FILE *dict)
 	p_obuf_cur = out_buf;
 	*p_obuf_cur = '\0';
 	while((read_res = read(0, read_buf, sizeof(read_buf))) > 0) {
-			for(p_rbuf = read_buf; (p_rbuf - read_buf) < read_res; p_rbuf++) {
+		for(
+			p_rbuf = read_buf;
+			(p_rbuf - read_buf) < read_res;
+			p_rbuf++
+		) {
 			switch(*p_rbuf) {
-				case '\4':
-					if(p_obuf_cur == out_buf)
-						goto ret;
-					break;
-				case '\t':
-					process_autocomplete(&p_obuf_cur, out_buf, dict);
-					break;
-				case '\n':
-					fprintf(out, "%s\n", out_buf);
-					putchar(*p_rbuf);
-					p_obuf_cur = out_buf;
-					*p_obuf_cur = '\0';
-					break;
-				case del:
-				case '\b':
-					process_backspace(&p_obuf_cur, out_buf);
-					break;
+			case '\4':
+				if(p_obuf_cur == out_buf)
+					goto ret;
+				break;
+			case '\t':
+				process_autocomplete(
+					&p_obuf_cur,
+					out_buf,
+					dict
+				);
+				break;
+			case '\n':
+				fprintf(out, "%s\n", out_buf);
+				putchar(*p_rbuf);
+				p_obuf_cur = out_buf;
+				*p_obuf_cur = '\0';
+				break;
+			case del:
+			case '\b':
+				process_backspace(&p_obuf_cur, out_buf);
+				break;
     			case escape:
-					process_escape_seq(read_buf, &read_res,
-						out_buf, &p_obuf_cur, &arrow_pressed);
-					break;
-				case erase_word:
-					erase_prev_word(out_buf, &p_obuf_cur);
-					break;
-				default:
-					if(*p_obuf_cur != '\0') {
-						update_out_buf(out_buf, &p_obuf_cur, *p_rbuf);
-						print_updated_buf(out_buf, p_obuf_cur, 0);
-					} else {
-						putchar(*p_rbuf);
-						*p_obuf_cur = *p_rbuf;
-						p_obuf_cur++;
-						if(!arrow_pressed) 
-							*p_obuf_cur = '\0';
-						arrow_pressed = 0;
-					}
-					break;
+				process_escape_seq(
+					read_buf,
+					&read_res,
+					out_buf,
+					&p_obuf_cur,
+					&arrow_pressed
+				);
+				break;
+			case erase_word:
+				erase_prev_word(out_buf, &p_obuf_cur);
+				break;
+			default:
+				if(*p_obuf_cur != '\0') {
+					update_out_buf(
+						out_buf,
+						&p_obuf_cur,
+						*p_rbuf
+					);
+					print_updated_buf(
+						out_buf,
+						p_obuf_cur,
+						0
+					);
+				} else {
+					putchar(*p_rbuf);
+					*p_obuf_cur = *p_rbuf;
+					p_obuf_cur++;
+					if(!arrow_pressed) 
+						*p_obuf_cur = '\0';
+					arrow_pressed = 0;
+				}
+				break;
 			}
 			fflush(stdout);
 		}
@@ -470,6 +515,7 @@ void set_noncannonical_mode(struct termios *ts1)
 		exit(1);
 	}
 }
+
 int main(int argc, char **argv)
 {
 	FILE *out_fd, *dict_fd;
@@ -509,6 +555,7 @@ int main(int argc, char **argv)
 		perror("tcsetattr");
 		return 5;
 	}
+
 	fclose(out_fd);
 	fclose(dict_fd);
 
