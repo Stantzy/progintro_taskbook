@@ -53,7 +53,7 @@ unsigned char get_num_from_ip(char **src)
 	return (unsigned char)number;
 }
 
-int check_ip_is_valid(char *ip_str)
+void check_ip_is_valid(char *ip_str)
 {
 	int count_dots = 0;
 	char *tmp = ip_str;
@@ -70,9 +70,6 @@ int check_ip_is_valid(char *ip_str)
 	tmp = ip_str;
 	while(*tmp != '\0')
 		get_num_from_ip(&tmp);
-
-
-	return 0;
 }
 
 void get_ip_as_nums(char *ip_str, unsigned char ip[ip_nums])
