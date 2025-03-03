@@ -137,11 +137,11 @@ int main(int argc, char **argv)
 			dg_total_size += bytes_received;
 			len = sprintf(buffer, "%d %d", dg_counter, dg_total_size);
 			ok = sendto(
-					sd,
-					buffer,
-					len,
-					0,
-					(struct sockaddr *)&addr, sizeof(addr)
+				sd,
+				buffer,
+				len,
+				0,
+				(struct sockaddr *)&addr, sizeof(addr)
 				);
 			if(ok == -1)
 				perror("Error sending datagram");
