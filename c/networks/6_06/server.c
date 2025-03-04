@@ -108,7 +108,7 @@ void set_timeout(struct timeval *tv, int sec, int usec, int sd)
 {
 	tv->tv_sec = sec;
 	tv->tv_usec = usec;
-	setsockopt(sd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+	setsockopt(sd, SOL_SOCKET, SO_RCVTIMEO, tv, sizeof(*tv));
 }
 
 int main(int argc, char **argv)
