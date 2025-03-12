@@ -55,7 +55,7 @@ int session_check_request_is_valid(struct session *sess)
 	int i = 0;
 	char *tmp = sess->buf;
 
-	if(*tmp == '\r')
+	if(*tmp == '\r' || *tmp == '\n')
 		return -1;
 	
 	while(*tmp == ' ' || *tmp == '\t')
@@ -71,7 +71,7 @@ int session_check_request_is_valid(struct session *sess)
 	while(*tmp == ' ' || *tmp == '\t')
 		tmp++;
 		
-	if(*tmp != '\r')
+	if(*tmp != '\r' && *tmp != '\n')
 		return -1;
 
 	return 0;
@@ -91,7 +91,8 @@ void session_get_request(struct session *sess)
 	while(*tmp == ' ' || *tmp == '\t')
 		tmp++;
 
-	while(*tmp != ' ' && *tmp != '\t' && *tmp != '\r') {
+	while(*tmp != ' ' && *tmp != '\t'
+		&& *tmp != '\n' && *tmp != '\r') {
 		req[i] = *tmp;
 		i++;
 		tmp++;
@@ -112,15 +113,21 @@ void session_get_request(struct session *sess)
 
 void session_check_lf(struct session *sess)
 {
-	int i;
+	int i, pos = -1;
 	
 	for(i = 0; i < sess->buf_used; i++) {
 		if(sess->buf[i] == '\n') {
 			session_get_request(sess);
-			sess->buf_used = 0;
-			return;
+			pos = i;
+			break;
 		}
 	}
+
+	if(pos == -1)
+		return;
+
+	sess->buf_used -= (pos + 1);
+	memmove(sess->buf, sess->buf + pos + 1, sess->buf_used);
 }
 
 int session_do_read(struct session *sess)

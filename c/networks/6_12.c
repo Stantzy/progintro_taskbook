@@ -45,15 +45,21 @@ void session_send_string(struct session *sess, const char *str)
 
 void session_check_lf(struct session *sess)
 {
-	int i;
+	int i, pos = -1;
 	
 	for(i = 0; i < sess->buf_used; i++) {
 		if(sess->buf[i] == '\n') {
 			session_send_string(sess, response);
-			sess->buf_used = 0;
-			return;
+			pos = i;
+			break;
 		}
 	}
+
+	if(pos == -1)
+		return;
+
+	sess->buf_used -= (pos + 1);
+	memmove(sess->buf, sess->buf + pos + 1, sess->buf_used);
 }
 
 int session_do_read(struct session *sess)
